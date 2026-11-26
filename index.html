@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14532d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Deed Maker">
 <title>Deed Maker</title>
 <style>
   :root{--bg:#f3f5f2;--card:#fff;--ink:#1c2420;--muted:#667269;--line:#d8ded9;--accent:#14532d;--accent2:#e7f3ea;--bad:#b42318;--ok:#17693a}
@@ -699,6 +704,10 @@ $("#lgPass").addEventListener("keydown", e => { if(e.key === "Enter") doLogin();
 window.addEventListener("online", () => scheduleSync());
 document.addEventListener("visibilitychange", () => { if(!document.hidden) scheduleSync(); });
 setInterval(() => { if(!document.hidden) sync(); }, 60000);
+
+if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
 
 /* ================= start ================= */
 renderDash(); updateAcct();
