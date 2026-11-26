@@ -2,7 +2,8 @@ const CACHE_NAME = "deedmaker-v2";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
-  "./manifest.webmanifest"
+  "./manifest.webmanifest"٫
+  "./icon.png"
 ];
 
 self.addEventListener("install", (event) => {
