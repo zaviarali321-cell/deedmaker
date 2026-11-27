@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14532d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Deed Maker">
+<title>Deed Maker</title>
+<style>
+  :root{--bg:#f3f5f2;--card:#fff;--ink:#1c2420;--muted:#667269;--line:#d8ded9;--accent:#14532d;--accent2:#e7f3ea;--bad:#b42318;--ok:#17693a}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Segoe UI",Roboto,Arial,"Noto Nastaliq Urdu","Noto Sans Arabic",sans-serif}
+  .ur{font-family:"Noto Nastaliq Urdu","Jameel Noor Nastaleeq","Segoe UI",Tahoma,sans-serif;font-size:.85em;color:var(--muted);margin-inline-start:6px}
+  header{background:var(--accent);color:#fff;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+  header h1{font-size:18px;margin:0;flex:1}
+  header .ur{color:#cfe8d6}
+  header button{background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:8px;padding:8px 12px;font-size:15px}
+  header .cloud{font-size:13px;background:rgba(255,255,255,.15);padding:6px 10px;border-radius:8px;white-space:nowrap;cursor:pointer;border:0;color:#fff}
+  header .cloud.bad{background:#b42318}
+  main{max-width:760px;margin:0 auto;padding:14px 14px 110px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+  h2{font-size:16px;margin:0 0 10px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+  .stat b{display:block;font-size:26px;color:var(--accent)}
+  .stat span{font-size:12px;color:var(--muted)}
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .type{border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center;background:var(--card);font-size:15px;min-height:84px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+  .type.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;cursor:pointer}
+  .type.on .ur{color:#d6ecdc}
+  .type.off{color:var(--muted);background:#f7f8f7;border-style:dashed}
+  .type small{font-size:11px}
+  input[type=text],input[type=date],input[type=search],select,textarea{width:100%;padding:11px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+  textarea{resize:vertical}
+  input.bad{border-color:var(--bad);background:#fff6f5}
+  .f{margin-bottom:10px}
+  .f>label{display:block;font-size:13px;color:var(--muted);margin-bottom:3px}
+  .chk{display:flex;align-items:center;gap:8px;margin:6px 0 10px;font-size:15px}
+  .chk input{width:20px;height:20px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .three{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:10px}
+  .hint{font-size:13px;margin-top:4px;color:var(--ok)}
+  .hint.warn{color:var(--bad)}
+  .btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px 16px;font-size:16px;font-weight:600}
+  .btn.alt{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+  .btn.red{background:#fff;color:var(--bad);border:1px solid var(--bad)}
+  .btn.sm{padding:8px 12px;font-size:14px;font-weight:500}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .item{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:0}
+  .item .t{flex:1 1 100%;min-width:0}
+  .item .t b{display:block;word-break:break-word}
+  .item .t span{font-size:12px;color:var(--muted)}
+  .sub{border:1px dashed var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:#fbfcfb}
+  .sub h3{margin:0 0 8px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:center;z-index:6}
+  .bar .btn{flex:1;max-width:260px}
+  .hide{display:none!important}
+  .miss{background:#fff4e5;border:1px solid #f1c27d;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+  .miss b{display:block;margin-bottom:4px}
+  .note{color:var(--muted);font-size:13px}
+  #sheetWrap{overflow-x:auto;background:#d9dcd9;padding:10px;border-radius:10px}
+  #sheet{background:#fff;color:#000;width:794px;max-width:none;margin:0 auto;padding:60px 64px;font-family:"Times New Roman",Times,serif;font-size:16px;line-height:1.5;box-shadow:0 1px 6px rgba(0,0,0,.25)}
+  @media print{
+    body{background:#fff}
+    header,.bar,.noprint,#view-dash,#view-form{display:none!important}
+    main{padding:0;max-width:none}
+    #sheetWrap{padding:0;background:#fff;overflow:visible}
+    #sheet{box-shadow:none;width:auto!important;padding:0;font-size:12pt;zoom:1!important}
+    @page{size:A4;margin:20mm}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <button id="backBtn" class="hide">← Back</button>
+  <h1 id="hTitle">Deed Maker <span class="ur" dir="rtl" lang="ur">ڈیڈ میکر</span></h1>
+  <button id="cloud" class="cloud" type="button">☁</button>
+</header>
+
+<main>
+
+<!-- ============ LOGIN ============ -->
+<div id="view-login" class="hide">
+  <div class="card" style="margin-top:20px">
+    <h2>Sign in <span class="ur" dir="rtl" lang="ur">لاگ اِن</span></h2>
+    <div class="f"><label>Email</label><input type="text" id="lgEmail" inputmode="email" autocomplete="username" autocapitalize="off"></div>
+    <div class="f"><label>Password</label><input type="password" id="lgPass" autocomplete="current-password" style="width:100%;padding:11px 10px;border:1px solid var(--line);border-radius:8px;font:inherit"></div>
+    <p class="hint warn" id="lgErr"></p>
+    <div class="row"><button class="btn" id="loginBtn">Sign in</button><button class="btn alt" id="skipBtn">Use on this device only</button></div>
+    <p class="note" style="margin-top:10px">Signing in keeps your documents the same on your phone, home computer and shop computers. It needs internet only while syncing.</p>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="view-dash">
+  <div class="stats">
+    <div class="stat"><b id="sTotal">0</b><span>Total documents</span></div>
+    <div class="stat"><b id="sMonth">0</b><span>This month</span></div>
+    <div class="stat"><b id="sToday">0</b><span>Today</span></div>
+  </div>
+
+  <div class="card">
+    <h2>New document <span class="ur" dir="rtl" lang="ur">نیا دستاویز</span></h2>
+    <div class="types">
+      <div class="type on" id="newSale">Sale Agreement<span class="ur" dir="rtl" lang="ur">سیل ایگریمنٹ</span></div>
+      <div class="type on" id="newConv">Conveyance Deed<span class="ur" dir="rtl" lang="ur">کنویئنس ڈیڈ</span></div>
+      <div class="type off">Gift Deed<small>Send a sample to add</small></div>
+      <div class="type off">Power of Attorney<small>Send a sample to add</small></div>
+      <div class="type off">Rent Agreement<small>Send a sample to add</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Saved documents <span class="ur" dir="rtl" lang="ur">محفوظ دستاویزات</span></h2>
+    <input type="search" id="search" placeholder="Search by name or CNIC / نام یا شناختی کارڈ سے تلاش کریں">
+    <div id="list" style="margin-top:6px"></div>
+    <p class="note" id="emptyNote"></p>
+  </div>
+
+  <div class="card">
+    <h2>Cloud sync <span class="ur" dir="rtl" lang="ur">کلاؤڈ</span></h2>
+    <p class="note" id="acctInfo"></p>
+    <div class="row">
+      <button class="btn sm" id="goLogin">Sign in</button>
+      <button class="btn alt sm" id="syncNow">Sync now</button>
+      <button class="btn red sm" id="logoutBtn">Sign out</button>
+    </div>
+    <p class="note" id="syncMsg"></p>
+  </div>
+
+  <div class="card">
+    <h2>Backup <span class="ur" dir="rtl" lang="ur">بیک اپ</span></h2>
+    <p class="note">Your documents are stored only on this device. To move them to another phone or computer, make a backup file and restore it there.</p>
+    <div class="row">
+      <button class="btn alt sm" id="expBtn">Make backup</button>
+      <label class="btn alt sm" style="margin:0">Restore backup<input type="file" id="impFile" accept=".json,application/json" hidden></label>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FORM ============ -->
+<div id="view-form" class="hide">
+  <div id="formBody"></div>
+</div>
+
+<!-- ============ PREVIEW ============ -->
+<div id="view-prev" class="hide">
+  <div id="missBox" class="miss noprint hide"></div>
+  <div id="sheetWrap"><div id="sheet"></div></div>
+</div>
+
+</main>
+
+<div class="bar hide" id="barForm">
+  <button class="btn alt" id="toDash">Save &amp; close</button>
+  <button class="btn" id="toPrev">Preview →</button>
+</div>
+<div class="bar hide" id="barPrev">
+  <button class="btn alt" id="toEdit">← Edit</button>
+  <button class="btn alt" id="dlWord">Word file</button>
+  <button class="btn" id="doPrint">Print / PDF</button>
+</div>
+
+<datalist id="kinds">
+  <option value="LEASEHOLD SUB-DIVIDED INDUSTRIAL OPEN PLOT">
+  <option value="RESIDENTIAL PLOT">
+  <option value="COMMERCIAL PLOT">
+  <option value="HOUSE">
+  <option value="FLAT">
+  <option value="SHOP">
+  <option value="AGRICULTURAL LAND">
+</datalist>
+
+<script>
+"use strict";
+/* ================= helpers ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const UR = (en, ur) => `${en}<span class="ur" dir="rtl" lang="ur">${ur}</span>`;
+const KEY = "deedmaker_v1";
+let warned = false;
+
+function loadAll(){ try{ const v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v : []; }catch(e){ return []; } }
+function persist(){
+  try{ localStorage.setItem(KEY, JSON.stringify(deeds)); return true; }
+  catch(e){ if(!warned){ warned = true; alert("This browser is not allowing saving (private mode or blocked storage). Your work will be lost when you close the page."); } return false; }
+}
+let deeds = loadAll();
+let cur = null;
+let saveTimer = null;
+
+const MONTHS = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
+const ONES = ["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+const TENS = ["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+const below100 = n => n < 20 ? ONES[n] : TENS[Math.floor(n/10)] + (n%10 ? " " + ONES[n%10] : "");
+const below1000 = n => { const h = Math.floor(n/100), r = n%100; return (h ? ONES[h] + " Hundred" + (r ? " " : "") : "") + (r ? below100(r) : ""); };
+function words(n){
+  n = Math.floor(Number(n));
+  if(!n) return "Zero";
+  if(n >= 1e12) return String(n);
+  const parts = [];
+  for(const [u, name] of [[1e9,"Arab"],[1e7,"Crore"],[1e5,"Lakh"],[1e3,"Thousand"]]){
+    if(n >= u){ parts.push(below1000(Math.floor(n/u)) + " " + name); n %= u; }
+  }
+  if(n) parts.push(below1000(n));
+  return parts.join(" ");
+}
+function inr(n){
+  const s = String(Math.floor(Number(n) || 0));
+  if(s.length <= 3) return s;
+  return s.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + s.slice(-3);
+}
+const ordinal = n => { n = +n; const s = ["TH","ST","ND","RD"], v = n % 100; return n + (s[(v-20)%10] || s[v] || s[0]); };
+const fmtDate = iso => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1]}` : (iso || ""); };
+const getPath = (o, p) => p.split(".").reduce((a, k) => a == null ? a : a[k], o);
+const setPath = (o, p, v) => { const k = p.split("."); let t = o; for(let i = 0; i < k.length - 1; i++) t = t[k[i]]; t[k[k.length-1]] = v; };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+/* ================= data model ================= */
+const newParty = () => ({title:"MR.", name:"", rel:"S/O", father:"", cnic:"", religion:"Muslim", address:"", attorney:false});
+const newWitness = () => ({title:"MR.", name:"", rel:"S/O", father:"", cnic:""});
+const newRow = () => ({bank:"", no:"", date:"", amount:""});
+function newSale(){
+  return {
+    id: uid(), type: "sale", title: "", created: Date.now(), updated: Date.now(),
+    data: {
+      place: "Karachi", day: "", month: "", year: String(new Date().getFullYear()),
+      vendors: [newParty()], vendees: [newParty()],
+      prop: {kind: "LEASEHOLD SUB-DIVIDED INDUSTRIAL OPEN PLOT", no: "", area: "", unit: "square yards", location: ""},
+      price: "", instrument: "Pay Order", payRows: [newRow()],
+      transferBy: "VENDEE",
+      witnesses: [newWitness(), newWitness()]
+    }
+  };
+}
+function makeTitle(c){
+  const d = c.data;
+  if(c.type === "conveyance"){ const b = (d.vendees[0].name || "").trim().toUpperCase(); return b ? `Conveyance Deed – ${b} (${(d.prop.no || "?").trim()})` : "Conveyance Deed (untitled)"; }
+  const a = (d.vendors[0].name || "").trim().toUpperCase(), b = (d.vendees[0].name || "").trim().toUpperCase();
+  return a || b ? `Sale Agreement – ${a || "?"} to ${b || "?"}` : "Sale Agreement (untitled)";
+}
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(flushSave, 400);
+}
+function flushSave(){
+  clearTimeout(saveTimer); saveTimer = null;
+  if(!cur) return;
+  cur.updated = Date.now(); cur.title = makeTitle(cur);
+  if(!deeds.includes(cur)) deeds.unshift(cur);
+  persist();
+  scheduleSync();
+}
+
+/* ================= navigation ================= */
+function show(view){
+  for(const v of ["login","dash","form","prev"]) $("#view-" + v).classList.toggle("hide", v !== view);
+  $("#barForm").classList.toggle("hide", view !== "form");
+  $("#barPrev").classList.toggle("hide", view !== "prev");
+  $("#backBtn").classList.toggle("hide", view === "dash" || view === "login");
+  $("#hTitle").innerHTML = view === "form" ? (cur && cur.type === "conveyance" ? UR("Conveyance Deed", "کنویئنس ڈیڈ") : UR("Sale Agreement", "سیل ایگریمنٹ")) : view === "prev" ? UR("Preview", "پیش منظر") : UR("Deed Maker", "ڈیڈ میکر");
+  window.scrollTo(0, 0);
+}
+function goDash(){ flushSave(); cur = null; renderDash(); show("dash"); }
+$("#backBtn").onclick = () => { if(!$("#view-prev").classList.contains("hide")) { show("form"); } else goDash(); };
+$("#toDash").onclick = goDash;
+$("#toEdit").onclick = () => show("form");
+$("#toPrev").onclick = () => { flushSave(); renderPreview(); show("prev"); };
+
+/* ================= dashboard ================= */
+function renderDash(){
+  const now = new Date(), startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(), startMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  $("#sTotal").textContent = deeds.length;
+  $("#sMonth").textContent = deeds.filter(d => d.created >= startMonth).length;
+  $("#sToday").textContent = deeds.filter(d => d.created >= startDay).length;
+  const q = $("#search").value.trim().toLowerCase();
+  const hay = d => { const x = d.data; return [d.title, ...(x.vendors || []).flatMap(p => [p.name, p.cnic]), ...x.vendees.flatMap(p => [p.name, p.cnic]), x.prop.no, x.prop.location].join(" ").toLowerCase(); };
+  const list = deeds.filter(d => !q || hay(d).includes(q)).sort((a, b) => b.updated - a.updated);
+  $("#list").innerHTML = list.map(d => `
+    <div class="item" data-id="${d.id}">
+      <div class="t"><b>${esc(d.title || "Untitled")}</b><span>${new Date(d.updated).toLocaleString()}</span></div>
+      <button class="btn sm" data-a="open">Open</button>
+      <button class="btn alt sm" data-a="dup">Copy</button>
+      <button class="btn red sm" data-a="del">Delete</button>
+    </div>`).join("");
+  $("#emptyNote").textContent = deeds.length ? (list.length ? "" : "Nothing found.") : "No documents yet. Tap “Sale Agreement” above to start.";
+}
+$("#search").oninput = renderDash;
+$("#list").onclick = e => {
+  const b = e.target.closest("button"); if(!b) return;
+  const id = b.closest(".item").dataset.id, d = deeds.find(x => x.id === id); if(!d) return;
+  if(b.dataset.a === "open"){ cur = d; renderForm(); show("form"); }
+  if(b.dataset.a === "dup"){
+    const c = JSON.parse(JSON.stringify(d)); c.id = uid(); c.created = c.updated = Date.now(); c.title = d.title + " (copy)";
+    deeds.unshift(c); persist(); renderDash();
+  }
+  if(b.dataset.a === "del"){
+    if(confirm("Delete this document permanently?\n\n" + (d.title || ""))){
+      deeds = deeds.filter(x => x !== d); persist();
+      const pend = loadPend(); if(!pend.includes(d.id)){ pend.push(d.id); savePend(pend); }
+      renderDash(); scheduleSync();
+    }
+  }
+};
+$("#newSale").onclick = () => { cur = newSale(); renderForm(); show("form"); };
+$("#newConv").onclick = () => { cur = newConv(); renderForm(); show("form"); };
+$("#expBtn").onclick = () => {
+  if(!deeds.length) return alert("Nothing to back up yet.");
+  download("deed-backup-" + new Date().toISOString().slice(0, 10) + ".json", JSON.stringify(deeds), "application/json");
+};
+$("#impFile").onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const arr = JSON.parse(r.result);
+      if(!Array.isArray(arr) || arr.some(x => !x || !x.id || !x.data || !x.data.vendors && !x.data.vendees)) throw 0;
+      let added = 0;
+      arr.forEach(x => { if(!deeds.some(d => d.id === x.id)){ delete x.syncedAt; deeds.push(x); added++; } });
+      persist(); renderDash(); scheduleSync(); alert(added + " document(s) restored.");
+    }catch(err){ alert("This is not a valid backup file."); }
+    e.target.value = "";
+  };
+  r.readAsText(f);
+};
+function download(name, text, type){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], {type}));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ================= form ================= */
+function F(path, label, o = {}){
+  const val = getPath(cur.data, path);
+  if(o.check) return `<label class="chk"><input type="checkbox" data-p="${path}" ${val ? "checked" : ""}> ${label}</label>`;
+  let ctl;
+  if(o.options) ctl = `<select data-p="${path}">${o.options.map(x => `<option${x === val ? " selected" : ""}>${esc(x)}</option>`).join("")}</select>`;
+  else if(o.area) ctl = `<textarea rows="${o.rows || 2}" data-p="${path}" placeholder="${esc(o.ph || "")}">${esc(val)}</textarea>`;
+  else ctl = `<input type="${o.type || "text"}" data-p="${path}" value="${esc(val)}" ${o.kind ? `data-k="${o.kind}"` : ""} ${o.num ? 'inputmode="numeric"' : ""} ${o.list ? `list="${o.list}"` : ""} placeholder="${esc(o.ph || "")}" ${o.kind === "cnic" && val && val.length !== 15 ? 'class="bad"' : ""} autocomplete="off">`;
+  return `<div class="f"><label>${label}</label>${ctl}${o.hint ? `<div class="hint" id="${o.hint}"></div>` : ""}</div>`;
+}
+function partyForm(list, i, role){
+  const base = `${list}.${i}`, many = cur.data[list].length > 1;
+  return `<div class="sub"><h3><span>${role} ${many ? i + 1 : ""}</span>${many ? `<button class="btn red sm" data-act="del" data-list="${list}" data-i="${i}">Remove</button>` : ""}</h3>
+    <div class="two">${F(base + ".title", "Title", {options: ["MR.", "MRS.", "MS.", "M/S"]})}${F(base + ".name", UR("Full name", "نام"))}</div>
+    <div class="two">${F(base + ".rel", "Relation", {options: ["S/O", "D/O", "W/O", "—"]})}${F(base + ".father", UR("Father / husband name", "والد / شوہر کا نام"))}</div>
+    ${F(base + ".cnic", UR("CNIC number", "شناختی کارڈ نمبر"), {kind: "cnic", num: true, ph: "42301-1234567-1"})}
+    ${F(base + ".religion", "Religion", {options: ["Muslim", "Non-Muslim", ""]})}
+    ${F(base + ".address", UR("Address", "پتہ"), {area: true})}
+    ${list === "vendors" ? F(base + ".attorney", "Signing as Attorney (adds “(Attorney)”)", {check: true}) : ""}
+  </div>`;
+}
+function renderForm(){
+  if(cur.type === "conveyance") return renderConvForm();
+  const d = cur.data;
+  $("#formBody").innerHTML = `
+  <div class="card"><h2>${UR("Date & place", "تاریخ اور مقام")}</h2>
+    ${F("place", "Place", {})}
+    <div class="three">${F("day", "Day (blank = ____)", {num: true})}${F("month", "Month", {options: [""].concat(MONTHS)})}${F("year", "Year", {num: true})}</div>
+  </div>
+
+  <div class="card"><h2>${UR("Vendor (seller)", "بیچنے والا")}</h2>
+    ${d.vendors.map((_, i) => partyForm("vendors", i, "Vendor")).join("")}
+    <button class="btn alt sm" data-act="add" data-list="vendors">+ Add another vendor</button>
+  </div>
+
+  <div class="card"><h2>${UR("Vendee (buyer)", "خریدار")}</h2>
+    ${d.vendees.map((_, i) => partyForm("vendees", i, "Vendee")).join("")}
+    <button class="btn alt sm" data-act="add" data-list="vendees">+ Add another vendee</button>
+  </div>
+
+  <div class="card"><h2>${UR("Property", "جائیداد")}</h2>
+    ${F("prop.kind", "Kind of property", {list: "kinds"})}
+    <div class="two">${F("prop.no", "Plot / flat no.", {})}${F("prop.area", UR("Area", "رقبہ"), {ph: "968"})}</div>
+    ${F("prop.unit", "Area unit", {options: ["square yards", "square feet", "square meters", "acres", "marla", "kanal"]})}
+    ${F("prop.location", UR("Location / address of property", "مقام"), {area: true})}
+  </div>
+
+  <div class="card"><h2>${UR("Price & payment", "قیمت اور ادائیگی")}</h2>
+    ${F("price", UR("Total sale price (Rs.)", "کل رقم"), {kind: "money", num: true, hint: "h-price", ph: "10000000"})}
+    ${F("instrument", "Paid by", {options: ["Pay Order", "Cheque", "Demand Draft", "Cash"]})}
+    ${d.payRows.map((r, i) => `<div class="sub"><h3><span>Payment ${i + 1}</span>${d.payRows.length > 1 ? `<button class="btn red sm" data-act="del" data-list="payRows" data-i="${i}">Remove</button>` : ""}</h3>
+      <div class="two">${F(`payRows.${i}.bank`, UR("Bank name", "بینک"), {})}${F(`payRows.${i}.no`, d.instrument + " no.", {})}</div>
+      <div class="two">${F(`payRows.${i}.date`, UR("Date", "تاریخ"), {type: "date"})}${F(`payRows.${i}.amount`, UR("Amount (Rs.)", "رقم"), {kind: "money", num: true})}</div></div>`).join("")}
+    <button class="btn alt sm" data-act="add" data-list="payRows">+ Add payment</button>
+    <div class="hint" id="h-sum" style="margin-top:8px"></div>
+    <div style="margin-top:12px">${F("transferBy", "Transfer fee / stamp duty paid by", {options: ["VENDEE", "BOTH PARTIES EQUALLY"]})}</div>
+  </div>
+
+  <div class="card"><h2>${UR("Witnesses", "گواہان")}</h2>
+    ${d.witnesses.map((_, i) => `<div class="sub"><h3><span>Witness ${i + 1}</span><button class="btn red sm" data-act="del" data-list="witnesses" data-i="${i}">Remove</button></h3>
+      <div class="two">${F(`witnesses.${i}.title`, "Title", {options: ["MR.", "MRS.", "MS."]})}${F(`witnesses.${i}.name`, UR("Full name", "نام"), {})}</div>
+      <div class="two">${F(`witnesses.${i}.rel`, "Relation", {options: ["S/O", "D/O", "W/O", "—"]})}${F(`witnesses.${i}.father`, "Father / husband name", {})}</div>
+      ${F(`witnesses.${i}.cnic`, UR("CNIC number", "شناختی کارڈ نمبر"), {kind: "cnic", num: true})}</div>`).join("")}
+    ${d.witnesses.length < 4 ? `<button class="btn alt sm" data-act="add" data-list="witnesses">+ Add witness</button>` : ""}
+  </div>`;
+  updateHints();
+}
+function updateHints(){
+  const d = cur.data, hp = $("#h-price"), hs = $("#h-sum");
+  if(cur.type === "conveyance"){ if(hp) hp.textContent = d.price ? `Rs.${inrIntl(d.price)}/=  (Rupees ${wordsIntl(d.price)} Only)` : ""; return; }
+  if(hp) hp.textContent = d.price ? `Rs. ${inr(d.price)}/-  —  Rupees ${words(d.price)} Only` : "";
+  if(hs){
+    const rows = d.payRows.filter(r => r.amount), sum = rows.reduce((a, r) => a + Number(r.amount), 0);
+    if(!rows.length){ hs.textContent = ""; hs.className = "hint"; }
+    else if(!d.price){ hs.textContent = `Payments total: Rs. ${inr(sum)}/-`; hs.className = "hint"; }
+    else if(sum === Number(d.price)){ hs.textContent = `✓ Payments total Rs. ${inr(sum)}/- and match the sale price.`; hs.className = "hint"; }
+    else { hs.textContent = `⚠ Payments total Rs. ${inr(sum)}/- but sale price is Rs. ${inr(d.price)}/- (difference Rs. ${inr(Math.abs(Number(d.price) - sum))}/-).`; hs.className = "hint warn"; }
+  }
+}
+function onField(e){
+  const el = e.target, p = el.dataset && el.dataset.p; if(!p || !cur) return;
+  let v = el.type === "checkbox" ? el.checked : el.value;
+  const k = el.dataset.k;
+  if(k === "cnic"){
+    const g = v.replace(/\D/g, "").slice(0, 13);
+    v = g.length > 12 ? `${g.slice(0, 5)}-${g.slice(5, 12)}-${g.slice(12)}` : g.length > 5 ? `${g.slice(0, 5)}-${g.slice(5)}` : g;
+    el.value = v; el.classList.toggle("bad", v.length > 0 && v.length !== 15);
+  }
+  if(k === "money"){ v = v.replace(/\D/g, "").replace(/^0+(?=\d)/, ""); el.value = v; }
+  setPath(cur.data, p, v);
+  scheduleSave(); updateHints();
+}
+$("#formBody").addEventListener("input", onField);
+$("#formBody").addEventListener("change", onField);
+$("#formBody").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]"); if(!b || !cur) return;
+  const list = b.dataset.list, arr = cur.data[list];
+  if(b.dataset.act === "add") arr.push(list === "payRows" ? newRow() : list === "witnesses" ? newWitness() : newParty());
+  if(b.dataset.act === "del"){ if(arr.length <= (list === "witnesses" ? 0 : 1)) return; arr.splice(+b.dataset.i, 1); }
+  scheduleSave(); renderForm();
+});
+
+/* ================= document text ================= */
+const U = s => String(s || "").toUpperCase();
+const blank = (s, n = 12) => (s && String(s).trim()) ? esc(String(s).trim()) : "_".repeat(n);
+const P = (t, x = "") => `<p style="margin:0 0 10pt;text-align:justify;line-height:1.5;${x}">${t}</p>`;
+const CL = (n, t) => P(`${n}.&nbsp;&nbsp;${t}`, "padding-left:28pt;text-indent:-28pt");
+const numWord = n => ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"][n] || String(n);
+
+function partyLine(p){
+  const nm = U([p.title, p.name].filter(Boolean).join(" ")) || "_".repeat(20);
+  const rel = p.father && p.rel !== "—" ? ` ${p.rel} ${U(p.father)}` : (p.father ? ` ${U(p.father)}` : "");
+  return `<b>${esc(nm)}${esc(rel)}</b>, holding CNIC No.${blank(p.cnic, 15)}, ${p.religion ? esc(p.religion) + ", " : ""}adult, R/o. ${blank(p.address, 30)}${p.attorney ? " (Attorney)" : ""}`;
+}
+function partiesBlock(list, tail){
+  if(list.length === 1) return P(`${partyLine(list[0])}, ${tail}`);
+  return list.map((p, i) => P(`(${i + 1}) ${partyLine(p)}${i < list.length - 1 ? "," : ", " + tail}`)).join("");
+}
+function sigBlock(role, list){
+  return list.map(p => `<p style="margin:26pt 0 0;line-height:1.3">__________________________<br><b>${role}:</b><br>${esc(U([p.title, p.name].filter(Boolean).join(" ")) || "")}<br>${p.father ? esc(p.rel !== "—" ? p.rel + " " : "") + esc(U(p.father)) + "<br>" : ""}CNIC No.${blank(p.cnic, 15)}</p>`).join("");
+}
+function buildDoc(d){
+  const dayPart = d.day ? ordinal(d.day) : "____", monPart = d.month || "____________";
+  const rows = d.payRows.filter(r => r.amount || r.bank || r.no);
+  const total = rows.reduce((a, r) => a + (Number(r.amount) || 0), 0);
+  const priceN = d.price || "";
+  const banks = [...new Set(rows.map(r => r.bank.trim()).filter(Boolean))];
+  let payText;
+  if(d.instrument === "Cash") payText = "in cash";
+  else {
+    const n = rows.length || 1, noun = n > 1 ? d.instrument + "s" : d.instrument;
+    const verb = d.instrument === "Cheque" ? "drawn on" : "issued by";
+    const bankTxt = banks.length ? banks.map(esc).join(" and ") : "____________";
+    payText = `through ${numWord(n)} (${String(n).padStart(2, "0")}) ${noun} ${verb} ${bankTxt},`.replace(/,$/, "");
+  }
+  const showTable = rows.length && d.instrument !== "Cash";
+  const th = "border:1px solid #000;padding:4px 6px;text-align:left;font-weight:bold", td = "border:1px solid #000;padding:4px 6px";
+  const table = showTable ? `<table style="border-collapse:collapse;width:100%;margin:0 0 12pt;font-size:11pt"><tr><th style="${th}">S. No.</th><th style="${th}">Bank Name</th><th style="${th}">${esc(d.instrument)} No.</th><th style="${th}">Date</th><th style="${th}">Amount</th></tr>${rows.map((r, i) => `<tr><td style="${td}">${i + 1}.</td><td style="${td}">${esc(r.bank)}</td><td style="${td}">${esc(r.no)}</td><td style="${td}">${esc(fmtDate(r.date))}</td><td style="${td}">${r.amount ? inr(r.amount) + "/-" : ""}</td></tr>`).join("")}</table>` : "";
+  const pr = d.prop;
+  const transfer = d.transferBy === "VENDEE" ? "The VENDEE shall bear" : "Both the parties shall equally bear";
+
+  const wit = d.witnesses.map(w => `<td style="width:50%;vertical-align:top;padding-right:10pt"><p style="margin:26pt 0 0;line-height:1.3">______________________<br>${esc(U([w.title, w.name].filter(Boolean).join(" ")) || "")}<br>${w.father ? esc(w.rel !== "—" ? w.rel + " " : "") + esc(U(w.father)) + "<br>" : ""}CNIC No.${blank(w.cnic, 15)}</p></td>`);
+  let witRows = "";
+  for(let i = 0; i < wit.length; i += 2) witRows += `<tr>${wit[i]}${wit[i + 1] || "<td></td>"}</tr>`;
+  const witTable = d.witnesses.length ? `<p style="margin:22pt 0 0"><b>WITNESSES:</b></p><table style="width:100%;border-collapse:collapse">${witRows.replace(/(<td[^>]*>)<p style="margin:26pt 0 0;line-height:1.3">/g, (m, a, off) => m).replace(/<p style="margin:26pt 0 0;line-height:1.3">/g, (m) => m)}</table>` : "";
+  // number the witnesses
+  let wn = 0;
+  const witNumbered = witTable.replace(/______________________<br>/g, () => `${++wn}.______________________<br>`);
+
+  return `
+  <p style="text-align:center;font-weight:bold;font-size:16pt;text-decoration:underline;margin:0 0 14pt">AGREEMENT OF SALE</p>
+  ${P(`THIS AGREEMENT OF SALE IS MADE AT ${esc(U(d.place)) || "______"} ON THIS ${dayPart} DAY OF ${monPart} ${esc(d.year || "____")}.`)}
+  ${P("BETWEEN")}
+  ${partiesBlock(d.vendors, `hereinafter ${d.vendors.length > 1 ? "collectively " : ""}referred to as the "VENDOR" (which expression wherever the context so permits shall mean and include his/her legal heirs, executors, administrators, successors, attorneys, representatives, nominees and assigns) party of the FIRST PART.`)}
+  ${P("AND")}
+  ${partiesBlock(d.vendees, `hereinafter collectively referred to as the "VENDEE" (which expression shall wherever the context so permits, shall mean and include his Legal Heirs, Legal Representatives, Attorney(s), Administrators, Successors in interest and Assigns) of the Other Part.`)}
+  ${P(`WHEREAS THE VENDOR aforesaid is on the date of these presents is seized, possessed of and is otherwise well and sufficiently entitle and Owner of ${esc(U(pr.kind)) || "____________"} bearing No.${blank(pr.no, 8)}, admeasuring ${blank(pr.area, 6)} ${esc(pr.unit)} situated at ${blank(pr.location, 30)}, hereinafter referred the "SAID PROPERTY".`)}
+  ${P(`AND WHEREAS First Party have agreed to sell to the above said property and the Second party has agreed to purchase the same against the total Sale Price of RS.${priceN ? inr(priceN) : "__________"}/- (Rupees ${priceN ? words(priceN) : "__________"} only) on the terms and conditions hereinafter appearing:-`)}
+  ${P("<b>NOW THEREFORE THIS AGREEMENT OF SALE WITNESSETH AS UNDER:</b>")}
+  ${CL(1, `That the VENDOR has received a sum of RS.${priceN ? inr(priceN) : "__________"}/- (Rupees ${priceN ? words(priceN) : "__________"} Only) from the above-named VENDEE, ${payText}, AS FULL AND FINAL PAYMENT towards the said sale consideration${showTable ? ", the details of which are mentioned in the Schedule of Payments given below" : ""}.`)}
+  ${table}
+  ${CL(2, "THAT the First Party assures that the said Property is free from all sorts of liens, demands, claims, charges, taxes, and any other encumbrances and disputes and no any other legal heir or lawful owner of the said property except me, whatsoever nature.")}
+  ${CL(3, "THAT the VENDOR has handed over to the VENDEE the peaceful possession of the said Property together with all the Rights, interests, alongwith Original documents and privileges thereon and the Second Party who henceforth be the sole and absolute owner of the said Property and shall hold, occupy and enjoy peaceful possession and profits, thereof to which the VENDOR shall have no Claim or any concern.")}
+  ${CL(4, "THAT the VENDOR shall keep VENDEE indemnified against all charges, rights, claims, losses and detriments may be occasioned due to concealment of facts or any other defect in the title of the said Property.")}
+  ${CL(5, `That the VENDOR undertake to sign all documents whenever needed and shall appear before the concerned authorities in connection with the transfer of the said property in favour of VENDEE and will not demand any extra amount in this connection. ${transfer} Transfer Fee/Stamp Duty/Registration Fee and documentation charges for the same.`)}
+  ${CL(6, "That the VENDOR assures the VENDEE that he/she has not sold, gifted and given the said Property or entered into any agreement to dispose off the above said Property to any body else, prior to this transaction with the VENDEE above named. That in future VENDOR or any of his/her/their legal heirs shall have no claim or interest in the above said Property.")}
+  ${CL(7, "That the VENDOR is fully responsible for the clearance of all dues, liabilities, if any to the departments concerned prior to handing over the vacant possession of the said Property.")}
+  ${CL(8, "That the VENDOR is fully responsible for any claims, disputes, litigations or otherwise in respect of the aforesaid Property and the VENDEE is/are not holding any responsibility in this respect.")}
+  ${CL(9, "THAT the terms and conditions of this Agreement have been read over and explained to the parties which they admit to be correct and as per their instructions and agree to abide by the same.")}
+  ${P(`IN WITNESSES WHEREOF both the parties have set and subscribed their respective hands to this Agreement of Sale at ${esc(U(d.place)) || "______"} on the day, month and the year first above mentioned.`, "margin-top:14pt")}
+  ${sigBlock("VENDOR", d.vendors)}
+  ${sigBlock("VENDEE", d.vendees)}
+  ${witNumbered}`;
+}
+function missing(d){
+  const m = [];
+  const chk = (list, role) => list.forEach((p, i) => {
+    const t = role + (list.length > 1 ? " " + (i + 1) : "");
+    if(!p.name.trim()) m.push(t + " name");
+    if(p.cnic.length !== 15) m.push(t + " CNIC (needs 13 digits)");
+    if(!p.address.trim()) m.push(t + " address");
+  });
+  chk(d.vendors, "Vendor"); chk(d.vendees, "Vendee");
+  if(!d.prop.no.trim()) m.push("Plot / flat number");
+  if(!d.prop.area.trim()) m.push("Property area");
+  if(!d.prop.location.trim()) m.push("Property location");
+  if(!d.price) m.push("Sale price");
+  const rows = d.payRows.filter(r => r.amount);
+  if(!rows.length && d.instrument !== "Cash") m.push("Payment details");
+  else if(d.price && rows.length && rows.reduce((a, r) => a + Number(r.amount), 0) !== Number(d.price)) m.push("Payments do not add up to the sale price");
+  d.witnesses.forEach((w, i) => { if(!w.name.trim()) m.push(`Witness ${i + 1} name`); if(w.cnic.length !== 15) m.push(`Witness ${i + 1} CNIC`); });
+  return m;
+}
+
+/* ================= Conveyance Deed ================= */
+const DEF_VENDORS = `(1) MR. NAZIR AHMED S/O MOOSA, holding NIC No.51101-9767933-7, Muslim, adult, R/o. Gazi, Peerandar, District Awaran, (2) MR. ABDUL HAKEEM S/O. MUBARAK ALI holding NIC No. 45402-7401687-5, Muslim, adult, R/o. Muhalla Hussainabad Dor, District Shaheed Benazirabad, (3) MR. BAKSHAN S/O. JURU holding NIC No. 45402-1804279-5, Muslim, adult, R/o. Rehmanabad Ward No. 1, Taluka Handi, District Nawabshah, (4) MR. QURBAN ALI S/O. MUHAMMAD ALI holding NIC No. 51503-1778208-1, Muslim, adult, R/o. Zehri Goth, Dakhana Hub, Lasbella, (5) MR. ABDUL GHAFOOR S/O. DEEN MUHAMMAD holding NIC No. 51103-5184090-3, Muslim, adult, R/o. Shandi Jhao, Dakhana Jhal Jhao, District Awaran AND (6) MR. MUHAMMAD  YAQOOB S/O. MUHAMMAD ALI holding NIC No. 51502-7113202-9, Muslim, adult, R/o. Lak Rohail, Dakhana Dareji, Lasbella acting through their duly constituted Attorney MR. MUHAMMAD ARIF S/O SULEMAN, holding CNIC No.42301-4395211-7, Muslim, adult, R/o. Flat No.1, 1st Floor, Gul Mansion, Near Ali Dina Hospital, Imam Bara Street, Kharadar, Karachi appointed by virtue of General Power of Attorney registered at No.28 in Book IV by the Sub-Registrar, Keamari Town, Karachi on 24-02-2023 and scanned as per Digital Scanning Unit DSU KHI BOR Sindh on 14-Mar-2023 bearing RD:28/SRO:26/DocType:42, hereinafter referred to as the "VENDORS" (which expression shall wherever the context so permits, shall mean and include his/their respective Legal Heirs, Legal Representatives, Attorneys, Executors, Administrators, Successors in interest and Assigns) of the First Part;`;
+const DEF_REC1 = `WHEREAS the Vendors above-named are seized, possessed and otherwise well, fully and exclusively entitled to LEASEHOLD INDUSTRIAL PLOT OF LAND bearing Nos. 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189 and 190 (Survey/Chalta No. 194) each Plot is admeasuring 4-00 (four) acres thus bringing the total area admeasuring 80-00 (eighty) acres situated at K-28, Phase-II, Translyari Quarter, Hawksbay Road, District Keamari, Karachi (hereinafter referred to as the SAID WHOLE PROPERTY) acquired by the Vendors as per Allotment Order issued by the Secretary to Government of Sindh, Land Utilization Department, vide No.03-683-11/SO-V/1113/22 dated:11-08-2022 of which entry was recorded in the Records Rights in the Office of the Mukhtiarkar/Survey Officer K-28, Keamari, Karachi Entry No.194, Lease for 99 years was granted in favour of Vendors above-named which was executed by Mukhtiarkar/Survey Officer K-28, Keamari, Karachi  on 20-12-2022.`;
+const DEF_REC2 = `AND WHEREAS as mentioned hereinbefore one of the plot bearing No.184 admeasuring 4 (four) acres was sub-divided by the Office of the Mukhtiarkar/Survey Officer K-28, District Keamari-Karachi into 20 Portions/Plots viz. Portion/Plot No.184/1 to 184/20 as per Sub-Division Plan approved vide Order No.24/2023, dated 25-01-2023, the details of which is as under;`;
+const DEF_REC3 = `AND WHEREAS after sub-division the Entry of these plots was recorded in the PROPERTY REGISTER FOR CITY OF KARACHI QUARTER SHEET NO.K-28 TRANSLYARI QUARTER, HAWKSBAY ROAD, KEAMARI KARACHI. AND the Vendors doth hereby state, assure and undertake that the above Said Property was acquired by the Vendors in a Lawful manner and all the amount on account of Cost of the Plot of Land and all other dues, charges, taxes, rents etc. have already been paid and now nothing is outstanding AND the plot was legally/officially sub-divided and all requisite payments were made and Vendors assure, agree, undertake and declare that the Sub-Divided Plots as detailed above art free from all encumbrances of any nature whatsoever and are available with clean marketable and unencumbered title with peaceful, vacant and physical possess and all the payments of taxes/charges/ dues/fees/rent/cesses on the above portions/plots upto the date of the possession have been paid by the Vendor and from now onwards all charges/taxes/cesses/fees/dues shall be paid by the VENDEE.`;
+const DEF_SUBROWS = [994,994,994,994,994,994,994,994,994,994,989,978,968,958,947,937,926,916,905,895].map((a, i) => `184/${i + 1} | ${a} Square Yards`).join("\n");
+const DEF_VSIGN = "Through their General Attorney\nMR. MUHAMMAD ARIF\nS/O SULEMAN\nCNIC No.42301-4395211-7";
+function newConv(){
+  return {
+    id: uid(), type: "conveyance", title: "", created: Date.now(), updated: Date.now(),
+    data: {
+      place: "Karachi", day: "", month: "", year: String(new Date().getFullYear()),
+      vendees: [newParty()],
+      prop: {kind: "SUB-DIVIDED INDUSTRIAL OPEN PLOT", no: "", area: "", unit: "Square Yards", parent: "Plot No.184 Measuring 04-00 Acres", location: "K-28, Phase-II, Translyari Quarter Hawksbay Road, District Keamari, Karachi", police: "MARIPUR"},
+      price: "", nocNo: "", nocDate: "",
+      north: "", south: "", east: "", west: "",
+      witnesses: [newWitness(), newWitness()],
+      vendorsText: DEF_VENDORS, rec1: DEF_REC1, rec2: DEF_REC2, subRows: DEF_SUBROWS, rec3: DEF_REC3, vendorSign: DEF_VSIGN
+    }
+  };
+}
+const wordsIntl = n => {
+  n = Math.floor(Number(n)); if(!n) return "Zero"; if(n >= 1e12) return String(n);
+  const parts = [];
+  for(const [u, name] of [[1e9,"Billion"],[1e6,"Million"],[1e3,"Thousand"]]) if(n >= u){ parts.push(below1000(Math.floor(n/u)) + " " + name); n %= u; }
+  if(n) parts.push(below1000(n));
+  return parts.join(" ");
+};
+const inrIntl = n => String(Math.floor(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const cap = s => s ? s[0].toUpperCase() + s.slice(1).toLowerCase() : s;
+const NL = s => esc(s).replace(/\n/g, "<br>");
+const fmtD = iso => fmtDate(iso).replace(/\./g, "-");
+function renderConvForm(){
+  const d = cur.data;
+  $("#formBody").innerHTML = `
+  <div class="card"><h2>${UR("Date & place", "تاریخ اور مقام")}</h2>
+    ${F("place", "Place", {})}
+    <div class="three">${F("day", "Day (blank = ____)", {num: true})}${F("month", "Month", {options: [""].concat(MONTHS)})}${F("year", "Year", {num: true})}</div>
+  </div>
+  <div class="card"><h2>${UR("Vendee (buyer)", "خریدار")}</h2>
+    ${d.vendees.map((_, i) => partyForm("vendees", i, "Vendee")).join("")}
+    <button class="btn alt sm" data-act="add" data-list="vendees">+ Add another vendee</button>
+  </div>
+  <div class="card"><h2>${UR("Property", "جائیداد")}</h2>
+    ${F("prop.kind", "Kind of property", {list: "kinds"})}
+    <div class="two">${F("prop.no", "Plot no. (e.g. 184/10)", {})}${F("prop.area", UR("Area", "رقبہ"), {ph: "994"})}</div>
+    ${F("prop.unit", "Area unit", {options: ["Square Yards", "Square Feet", "Square Meters", "Acres"]})}
+    ${F("prop.parent", "Sub-divided from (blank = leave out)", {})}
+    ${F("prop.location", UR("Location of property", "مقام"), {area: true})}
+    ${F("prop.police", "Police station", {})}
+  </div>
+  <div class="card"><h2>${UR("Price", "قیمت")}</h2>
+    ${F("price", UR("Total sale consideration (Rs.)", "کل رقم"), {kind: "money", num: true, hint: "h-price", ph: "12077100"})}
+  </div>
+  <div class="card"><h2>${UR("NOC for sale", "این او سی")}</h2>
+    ${F("nocNo", "NOC letter no.", {ph: "MUKH-SO/KK/51/2026"})}
+    ${F("nocDate", UR("NOC letter date", "تاریخ"), {type: "date"})}
+  </div>
+  <div class="card"><h2>${UR("Boundaries", "حدود اربعہ")}</h2>
+    ${F("north", "North", {ph: "50' – 0\" WIDE ROAD"})}${F("south", "South", {ph: "Plot No.184/11"})}
+    ${F("east", "East", {ph: "Plot No.183/1"})}${F("west", "West", {ph: "Plot No.184/9"})}
+  </div>
+  <div class="card"><h2>${UR("Witnesses", "گواہان")}</h2>
+    ${d.witnesses.map((_, i) => `<div class="sub"><h3><span>Witness ${i + 1}</span><button class="btn red sm" data-act="del" data-list="witnesses" data-i="${i}">Remove</button></h3>
+      <div class="two">${F(`witnesses.${i}.title`, "Title", {options: ["MR.", "MRS.", "MS."]})}${F(`witnesses.${i}.name`, UR("Full name", "نام"), {})}</div>
+      <div class="two">${F(`witnesses.${i}.rel`, "Relation", {options: ["S/O", "D/O", "W/O", "—"]})}${F(`witnesses.${i}.father`, "Father / husband name", {})}</div>
+      ${F(`witnesses.${i}.cnic`, UR("CNIC number", "شناختی کارڈ نمبر"), {kind: "cnic", num: true})}</div>`).join("")}
+    ${d.witnesses.length < 4 ? `<button class="btn alt sm" data-act="add" data-list="witnesses">+ Add witness</button>` : ""}
+  </div>
+  <div class="card"><h2>${UR("Fixed text of this batch", "مستقل متن")}</h2>
+    <p class="note">Same for every deed of this land. Change only when vendors / attorney / plots change.</p>
+    ${F("vendorsText", "Vendors paragraph (with attorney & GPA)", {area: true, rows: 8})}
+    ${F("rec1", "Recital – whole property", {area: true, rows: 8})}
+    ${F("rec2", "Recital – sub-division", {area: true, rows: 4})}
+    ${F("subRows", "Sub-division table (one line each:  plot | area)", {area: true, rows: 8})}
+    ${F("rec3", "Recital – after sub-division", {area: true, rows: 8})}
+    ${F("vendorSign", "Vendor signature block", {area: true, rows: 4})}
+  </div>`;
+  updateHints();
+}
+function witBlock(list, bold){
+  const b = t => bold ? `<b>${t}</b>` : t;
+  const cells = list.map((w, i) => `<td style="width:50%;vertical-align:top;padding-right:10pt"><p style="margin:26pt 0 0;line-height:1.3">${i + 1}.______________________<br>${b(esc(U([w.title, w.name].filter(Boolean).join(" ")) || ""))}<br>${w.father ? b(esc(w.rel !== "—" ? w.rel + " " : "") + esc(U(w.father))) + "<br>" : ""}${b("CNIC No." + blank(w.cnic, 15))}</p></td>`);
+  let rows = ""; for(let i = 0; i < cells.length; i += 2) rows += `<tr>${cells[i]}${cells[i + 1] || "<td></td>"}</tr>`;
+  return list.length ? `<p style="margin:22pt 0 0"><b>WITNESSES:</b></p><table style="width:100%;border-collapse:collapse">${rows}</table>` : "";
+}
+function buildConv(d){
+  const B = t => `<b>${t}</b>`, pr = d.prop;
+  const dayPart = d.day ? ordinal(d.day).toLowerCase() : "____", monPart = d.month ? cap(d.month) : "____________";
+  const amt = `Rs.${d.price ? inrIntl(d.price) : "__________"}/=`, amtW = `(Rupees ${d.price ? wordsIntl(d.price) : "__________"} Only)`;
+  const unit = esc(pr.unit);
+  const convParty = p => {
+    const nm = U([p.title, p.name].filter(Boolean).join(" ")) || "_".repeat(20);
+    const rel = p.father && p.rel !== "—" ? ` ${p.rel} ${U(p.father)}` : (p.father ? ` ${U(p.father)}` : "");
+    return B(`${esc(nm)}${esc(rel)}, ${p.religion ? esc(p.religion) + ", " : ""}adult, holding CNIC No.${blank(p.cnic, 15)}, R/o ${blank(p.address, 30)}`);
+  };
+  const vendee = d.vendees.map((p, i) => (d.vendees.length > 1 ? `(${i + 1}) ` : "") + convParty(p)).join(", ");
+  const desc = `ALL THAT PIECE AND PARCEL OF LEASEHOLD ${esc(U(pr.kind)) || "____________"} bearing No.${blank(pr.no, 8)}, admeasuring ${blank(pr.area, 6)} ${unit}${pr.parent && pr.parent.trim() ? ` (sub-divided from ${esc(pr.parent.trim())})` : ""}, situated at ${blank(pr.location, 30)}`;
+  const sdesc = `${esc(U(pr.kind)) || "____________"} bearing No.${blank(pr.no, 8)}, admeasuring ${blank(pr.area, 6)} ${unit}, Situated at ${blank(pr.location, 30)}`;
+  const lines = String(d.subRows || "").split("\n").map(s => s.trim()).filter(Boolean).map(s => { const m = s.split("|"); return m.length > 1 ? [m[0].trim(), m.slice(1).join("|").trim()] : (x => [x[0], x.slice(1).join(" ")])(s.split(/\s+/)); });
+  const th = "border:1px solid #000;padding:4px 6px;text-align:left;font-weight:bold", td = "border:1px solid #000;padding:4px 6px";
+  const table = lines.length ? `<table style="border-collapse:collapse;width:100%;margin:0 0 12pt;font-size:11pt"><tr><th style="${th}">S. No.</th><th style="${th}">Portion/Plot No.</th><th style="${th}">Area</th></tr>${lines.map((r, i) => `<tr><td style="${td}">${i + 1}</td><td style="${td}">${esc(r[0])}</td><td style="${td}">${esc(/^\d+$/.test(r[1]) ? r[1] + " " + pr.unit : r[1])}</td></tr>`).join("")}</table>` : "";
+  const bound = (lbl, v) => P(B(`ON THE ${lbl} BY : ${blank(v, 20)}`), "margin-bottom:4pt");
+  const v0 = d.vendees[0];
+  const vsign = (d.vendees).map(p => `<p style="margin:26pt 0 0;line-height:1.3">__________________________<br><b>VENDEE:</b><br><b>${esc(U([p.title, p.name].filter(Boolean).join(" ")) || "")}</b><br>${p.father ? `<b>${esc(p.rel !== "—" ? p.rel + " " : "")}${esc(U(p.father))}</b><br>` : ""}<b>CNIC No.${blank(p.cnic, 15)}</b></p>`).join("");
+  return `
+  <p style="text-align:center;font-weight:bold;font-size:16pt;text-decoration:underline;margin:0 0 14pt;line-height:1.4">CONVEYANCE DEED<br>OF IMMOVABLE PROPERTY<br>VALUED AT ${esc(amt)}</p>
+  ${P(`THIS CONVEYANCE DEED IS MADE AT ${esc(U(d.place)) || "______"} ON THIS ${B(dayPart)} DAY OF ${B(monPart)} ${esc(d.year || "____")}.`)}
+  ${P("BETWEEN")}
+  ${P(NL(d.vendorsText))}
+  ${P("AND")}
+  ${P(`${vendee}, hereinafter ${d.vendees.length > 1 ? "collectively " : ""}referred to as the "VENDEE" (which expression shall wherever the context so permits, shall mean and include his/her legal heirs, Legal Representatives, Attorney(s), Administrators, Successors in interest and Assigns) of the Other Part.`)}
+  ${P(NL(d.rec1))}
+  ${P(NL(d.rec2))}
+  ${table}
+  ${P(NL(d.rec3))}
+  ${P(`AND WHEREAS VENDORS hereby state, declare and undertake that the above Said Property is Vendors' personal property and NO OTHER PERSON has any right, title or interest whatsoever therein and the VENDORS have full, absolute and legal right and legal capacity to Sell/Transfer ${B(desc)} (hereinafter referred to as the SAID PROPERTY/PLOT) to the VENDEE above named and to enter into these presents.`)}
+  ${P(`AFTER sub-division the aforesaid plot has been mutated in the records of rights being maintained by Mukhtiarkar/Survey Officer K-28 Keamari Karachi vide Survey/Chalta No.194 and Extract Form-II signed by City Surveyor K-28 Keamari Karachi and countersigned by Mukhtiarkar/Survey Officer K-28 Keamari Karachi. As well as NOC for Sale in respect of Plot bearing No.${B(blank(pr.no, 8))}, situated at ${B(blank(pr.location, 30))} has also been issued by Mukhtiarkar/Survey Officer K-28, Keamari-Karachi vide his Letter No.${B(blank(d.nocNo, 18) + ", Dated:" + (d.nocDate ? fmtD(d.nocDate) : "__-__-____"))} and countersigned by Assistant Commissioner Maripur, Keamari-Karachi.`)}
+  ${P(`AND WHEREAS the Said Vendors thus seized and possessed of and otherwise well, fully and sufficiently entitled to the Said Property AND doth hereby declare, covenant, undertake and confirm that the Vendors are fully competent to sell/transfer the above Said Property to the VENDEE with Clean and Marketable Title and Peaceful, Vacant and Physical Possession and the Vendors has agreed to sell, convey, assure, assign and transfer the Said Property to the VENDEE and the VENDEE has agreed to purchase/acquire the Said Property for the total Sale Consideration of ${B(esc(amt) + " " + esc(amtW))} with Peaceful, Vacant and Physical possession AND clean, unencumbered, legal, valid and marketable title and the Vendors and VENDEE entered into these presents.`)}
+  ${P("<b>NOW THEREFORE THIS CONVEYANCE DEED WITNESSETH AS UNDER:</b>")}
+  ${P(`That in pursuance SAID AGREEMENT OF SALE and in consideration of the agreed Sale Consideration of ${B(esc(amt) + " " + esc(amtW))} in cash within expressed being the amount of agreed Sale Consideration in full and final settlement paid by the Vendee to the Vendors total sale consideration of being the amount of agreed Sale Consideration in full and final settlement paid by the VENDEE to VENDORS/ATTORNEY and received by Vendors, the Vendors doth hereby admit and acknowledge the receipt of the total sale consideration and release, acquit and discharge the VENDEE from the same and each and every part thereof, the Vendors as such owners doth hereby grant, sell, convey, assign, transfer and assure unto the VENDEE the Said Property described in the schedule hereunder written together with all the LEASEHOLD AND OTHER RIGHT and the rights of ways, paths, passages, casements and privileges apparent to and enjoyed therewith and all the estates, rights, titles, and interests of the Vendors in, to and upon the Said Property hereby sold, conveyed, assigned and-transferred unto the VENDEE in the manner aforesaid.`)}
+  ${P("TO HAVE AND TO HOLD AND TO POSSESS the Said Property for, unto, and to the use of the Said VENDEE subject to all the terms and conditions of the 99 (Ninety-Nine) years LEASEHOLD RIGHTS which at the date of these presents is in full force, subsisting and has not become void or voidable by reason of breach or non-performance or non-observance of any terms and conditions thereof and/or non payment of any rates and charges payable there under.")}
+  ${P("AND the Vendors doth hereby covenant and assure the VENDEE that the Said Property hereby sold, assigned, conveyed and transferred to the VENDEE is the sole, absolute and personal property of the Vendors and the same is free from all Charges, Mortgages, Liens, Disputes, Litigations, Previous Commitments, Violation, Surety, cancellation, withdrawal, Guarantee, Acquisition, Requisition, Burdens, Benami Ownership, Defects of Title, Trust, Wakf, Gift, Inheritance, Tenant, Taxes, Dues, Attachment, Decree etc. and hence free from all encumbrances of any nature whatsoever.")}
+  ${P("AND THE VENDORS are the exclusive owners of the Said Property and Vendors have good right, full power and lawful authority to sell, transfer, convey and assign the same unto the VENDEE AND the VENDORS have not done, executed or caused to be done or suffered to be done or executed any such act, matter, deed or thing whereby Vendors right to sell/transfer the Said Property to the VENDEE would be affected and have not done and/or caused to be done or suffered to be done any act, matter, den whereby VENDORS' rights to sell/transfer the Said Property has been of may be impaired in any manner.")}
+  ${P("AND THE SAID PROPERTY described in the Schedule hereunder written shall be, from time to time and at all times hereafter, held possessed, occupied and enjoyed and the rents and profits thereof and the income there from received by the VENDEE without any eviction, interruptions, claims and demands by the Vendors and all persons lawfully and equitably claiming through, under and/or in trust for the Vendors and/or his/her/their predecessors-in-title and/or any of them.")}
+  ${P("AND THE VENDORS and all persons claiming through or under the Vendors shall, at all times, hereafter, at the request and cost of the VENDEE, execute and do and cause to be executed and done such further acts, deeds, matters and things for more perfectly assuring and transferring the Said Property unto the VENDEE, as may be the VENDEE, be reasonably required.")}
+  ${P("AND THE VENDORS and all persons claiming through or under the Vendors shall at times hereafter indemnify, the VENDEE and keep the VENDEE indemnified, safe, secured, compensated and harmless for all costs, charges and expenses and all losses and detriments sustained by the VENDEE owing to any defect in title.")}
+  ${P("AND THE VENDORS have delivered the Peaceful, Vacant and Physical Possession of Said Property to the VENDEE and delivered to the VENDEE all copies of requisite title and other documents.")}
+  ${P("AND that all Taxes, charges, fees and Government dues pertaining to the Said Property including all dues of the Government of Sindh and/or any other Concerned Department, Authority, Agency, Office and all other Charges/Taxes payable up-to the date of possession have been paid by the Vendors, if any of the taxes, charges, dues etc. on the Said Property remains unpaid up-to the date of possession the same shall be paid by the VENDORS if payable legally/officially.")}
+  ${P("AND hence forth the VENDEE shall be the rightful and absolute owner of the Said Property and every portion thereof and shall peaceably and quietly have, hold, occupy and possess the same and enjoy all rents, profits, emoluments, privileges and advantages thereof without any claim, benefits, profits and rights thereof without any claim, demand, denial. dispute, interference, Interruption, let, hindrance or eviction by the Vendors and/or any other person claiming through and/or in His/her/their trust.")}
+  ${P("WE, do hereby undertake that in future any dispute, claim, litigation, fraud, forgery, double allotment or title defect arises in this land, we both the parties shall be jointly and severally responsible. We shall face the legal consequences, indemnify the Authority and bear all costs/damages, we shall appear before Court and Sub-Registrar Keamari Town and applicant shall not responsible.")}
+  <p style="text-align:center;font-weight:bold;text-decoration:underline;margin:14pt 0 10pt">SCHEDULE OF PROPERTY</p>
+  ${P(`ALL THAT PIECE AND PARCEL OF LEASEHOLD ${B(sdesc)}, the Registration District, Sub District and City Keamari, Karachi and falls within the Jurisdiction of "${esc(U(pr.police)) || "__________"}" Police Station and the Said Property/Land is abutted and bounded as under:`)}
+  ${bound("NORTH", d.north)}${bound("SOUTH", d.south)}${bound("EAST", d.east)}${bound("WEST", d.west)}
+  ${P("AS PER SKETCH/SUB-DIVISION LETTER ATTACHED AND MADE AS AN INTEGRAL PART.", "margin-top:10pt")}
+  ${P(`IN WITNESSES WHEREOF the parties above-named have hereunder hereby set and subscribed their respective hands at ${esc(U(d.place)) || "______"} before the witnesses, the day, month and year first above mentioned.`, "margin-top:14pt")}
+  <p style="margin:26pt 0 0;line-height:1.3">__________________________<br><b>VENDOR(s):</b><br>${NL(d.vendorSign)}</p>
+  ${vsign}
+  ${witBlock(d.witnesses, true)}`;
+}
+function missingConv(d){
+  const m = [];
+  d.vendees.forEach((p, i) => { const t = "Vendee" + (d.vendees.length > 1 ? " " + (i + 1) : ""); if(!p.name.trim()) m.push(t + " name"); if(p.cnic.length !== 15) m.push(t + " CNIC (needs 13 digits)"); if(!p.address.trim()) m.push(t + " address"); });
+  if(!d.prop.no.trim()) m.push("Plot number"); if(!d.prop.area.trim()) m.push("Property area");
+  if(!d.price) m.push("Sale price");
+  if(!d.nocNo.trim()) m.push("NOC letter no."); if(!d.nocDate) m.push("NOC letter date");
+  [["north","North"],["south","South"],["east","East"],["west","West"]].forEach(([k, l]) => { if(!d[k].trim()) m.push(l + " boundary"); });
+  d.witnesses.forEach((w, i) => { if(!w.name.trim()) m.push(`Witness ${i + 1} name`); if(w.cnic.length !== 15) m.push(`Witness ${i + 1} CNIC`); });
+  return m;
+}
+const buildAny = c => c.type === "conveyance" ? buildConv(c.data) : buildDoc(c.data);
+const missingAny = c => c.type === "conveyance" ? missingConv(c.data) : missing(c.data);
+
+/* ================= preview / export ================= */
+function renderPreview(){
+  $("#sheet").innerHTML = buildAny(cur);
+  const m = missingAny(cur), box = $("#missBox");
+  box.classList.toggle("hide", !m.length);
+  box.innerHTML = m.length ? `<b>Not filled in yet (shown as blank lines in the document):</b>${m.map(esc).join(" · ")}` : "";
+}
+function fitSheet(){
+  const wrap = $("#sheetWrap"), sh = $("#sheet");
+  if(!wrap.offsetParent) return;
+  const avail = wrap.clientWidth - 20;
+  sh.style.zoom = avail < 794 ? (avail / 794).toFixed(3) : 1;
+}
+window.addEventListener("resize", fitSheet);
+$("#toPrev").addEventListener("click", () => setTimeout(fitSheet, 0));
+$("#doPrint").onclick = () => window.print();
+$("#dlWord").onclick = () => {
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${cur.type === "conveyance" ? "Conveyance Deed" : "Agreement of Sale"}</title><style>@page{size:A4;margin:2cm}body{font-family:"Times New Roman",serif;font-size:12pt}</style></head><body>${buildAny(cur)}</body></html>`;
+  const safe = (cur.title || (cur.type === "conveyance" ? "Conveyance Deed" : "Sale Agreement")).replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "_") || "Sale_Agreement";
+  download(safe + ".doc", "﻿" + html, "application/msword");
+};
+
+/* ================= cloud sync (Supabase, plain fetch) ================= */
+const CLOUD = {
+  url: "https://kijtqwqcywicexpjhjpz.supabase.co",
+  key: "sb_publishable_DAoZ8B0BwPj_ZsUQradJtg_W3nj1UuQ"   // publishable key: safe to be public, data is protected by login + row-level security
+};
+const SKEY = "deedmaker_session", PKEY = "deedmaker_pending_del", SKIP = "deedmaker_skip";
+const lsGet = (k, d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } };
+const lsSet = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+let session = lsGet(SKEY, null);
+const loadPend = () => lsGet(PKEY, []);
+const savePend = v => lsSet(PKEY, v);
+const loggedIn = () => !!(session && session.refresh_token);
+
+function setSession(j){
+  session = {
+    access_token: j.access_token, refresh_token: j.refresh_token,
+    expires_at: j.expires_at || Math.floor(Date.now() / 1000) + (j.expires_in || 3600),
+    email: (j.user && j.user.email) || (session && session.email) || ""
+  };
+  lsSet(SKEY, session);
+}
+function clearSession(){ session = null; try{ localStorage.removeItem(SKEY); }catch(e){} }
+
+async function ensureToken(force){
+  if(!loggedIn()) throw new Error("nologin");
+  if(!force && session.expires_at - Date.now() / 1000 > 60) return session.access_token;
+  const r = await fetch(`${CLOUD.url}/auth/v1/token?grant_type=refresh_token`, {
+    method: "POST", headers: {apikey: CLOUD.key, "Content-Type": "application/json"},
+    body: JSON.stringify({refresh_token: session.refresh_token})
+  });
+  if(!r.ok){ clearSession(); throw new Error("nologin"); }
+  setSession(await r.json());
+  return session.access_token;
+}
+async function rest(path, {method = "GET", body, headers = {}} = {}, retried){
+  const t = await ensureToken();
+  const r = await fetch(`${CLOUD.url}/rest/v1/${path}`, {
+    method, body: body ? JSON.stringify(body) : undefined,
+    headers: {apikey: CLOUD.key, Authorization: "Bearer " + t, "Content-Type": "application/json", ...headers}
+  });
+  if(r.status === 401 && !retried){ await ensureToken(true); return rest(path, {method, body, headers}, true); }
+  const txt = await r.text();
+  if(!r.ok){ const e = new Error("Server said " + r.status + ": " + txt.slice(0, 200)); e.status = r.status; throw e; }
+  return txt ? JSON.parse(txt) : null;
+}
+
+function setStatus(kind, msg){
+  const el = $("#cloud"), m = $("#syncMsg");
+  el.classList.toggle("bad", kind === "error");
+  el.textContent = ({off: "☁ Sign in", syncing: "☁ Syncing…", ok: "☁ Synced", offline: "☁ Offline", error: "☁ Problem"})[kind] || "☁";
+  if(m) m.textContent = kind === "ok" ? "Last synced: " + new Date().toLocaleTimeString() : (msg || (kind === "offline" ? "No internet. Everything is saved on this device and will sync later." : ""));
+}
+function updateAcct(){
+  const on = loggedIn();
+  $("#acctInfo").textContent = on ? "Signed in as " + (session.email || "your account") + ". Your documents sync automatically." : "Not signed in. Documents are saved only on this device.";
+  $("#goLogin").classList.toggle("hide", on);
+  $("#syncNow").classList.toggle("hide", !on);
+  $("#logoutBtn").classList.toggle("hide", !on);
+  if(!on) setStatus("off");
+}
+
+let syncing = false, syncAgain = false, syncTimer = null;
+function scheduleSync(){ if(!loggedIn()) return; clearTimeout(syncTimer); syncTimer = setTimeout(sync, 1500); }
+async function sync(){
+  if(!loggedIn()) return;
+  if(syncing){ syncAgain = true; return; }
+  syncing = true; setStatus("syncing");
+  try{
+    // 1) deletions made on this device
+    let pend = loadPend();
+    for(const id of pend.slice()){
+      if(!/^[a-z0-9]+$/i.test(id)){ pend = pend.filter(x => x !== id); savePend(pend); continue; }
+      await rest(`deeds?id=eq.${id}`, {method: "DELETE", headers: {Prefer: "return=minimal"}});
+      pend = pend.filter(x => x !== id); savePend(pend);
+    }
+    // 2) list what the cloud has
+    const cloud = new Map();
+    for(let off = 0; ; off += 1000){
+      const rows = await rest(`deeds?select=id,updated_at&order=id&limit=1000&offset=${off}`);
+      rows.forEach(r => cloud.set(r.id, Number(r.updated_at)));
+      if(rows.length < 1000) break;
+    }
+    const openId = cur ? cur.id : null;
+    const push = [], pull = [], gone = [];
+    for(const d of deeds){
+      const c = cloud.get(d.id);
+      if(c === undefined){ if(d.syncedAt) gone.push(d); else push.push(d); }
+      else if(d.updated > c) push.push(d);
+      else if(d.updated < c){ if(d.id !== openId) pull.push(d.id); }
+      else if(!d.syncedAt) d.syncedAt = Date.now();
+    }
+    for(const id of cloud.keys()) if(!deeds.some(d => d.id === id)) pull.push(id);
+    // 3) send newer local documents
+    for(let i = 0; i < push.length; i += 20){
+      const part = push.slice(i, i + 20);
+      await rest("deeds?on_conflict=id", {method: "POST", headers: {Prefer: "resolution=merge-duplicates,return=minimal"},
+        body: part.map(d => ({id: d.id, type: d.type, title: d.title || "", data: d.data, created_at: d.created, updated_at: d.updated}))});
+      part.forEach(d => d.syncedAt = Date.now());
+    }
+    // 4) fetch newer cloud documents
+    for(let i = 0; i < pull.length; i += 40){
+      const ids = pull.slice(i, i + 40).filter(id => /^[a-z0-9]+$/i.test(id));
+      if(!ids.length) continue;
+      const rows = await rest(`deeds?select=id,type,title,data,created_at,updated_at&id=in.(${ids.join(",")})`);
+      for(const r of rows){
+        const nd = {id: r.id, type: r.type, title: r.title, data: r.data, created: Number(r.created_at), updated: Number(r.updated_at), syncedAt: Date.now()};
+        const k = deeds.findIndex(d => d.id === r.id);
+        if(k >= 0) deeds[k] = nd; else deeds.push(nd);
+      }
+    }
+    // 5) remove documents deleted on another device
+    if(gone.length) deeds = deeds.filter(d => !gone.includes(d) || d.id === openId);
+    persist();
+    if(!$("#view-dash").classList.contains("hide")) renderDash();
+    setStatus("ok");
+  }catch(e){
+    if(e.message === "nologin"){ updateAcct(); setStatus("off"); $("#syncMsg").textContent = "Your sign-in expired. Please sign in again."; }
+    else if(e instanceof TypeError) setStatus("offline");
+    else setStatus("error", e.message);
+  }finally{
+    syncing = false;
+    if(syncAgain){ syncAgain = false; scheduleSync(); }
+  }
+}
+
+$("#goLogin").onclick = () => { $("#lgErr").textContent = ""; show("login"); };
+$("#skipBtn").onclick = () => { lsSet(SKIP, 1); renderDash(); show("dash"); updateAcct(); };
+$("#cloud").onclick = () => { if(loggedIn()) sync(); else { $("#lgErr").textContent = ""; show("login"); } };
+$("#syncNow").onclick = sync;
+$("#logoutBtn").onclick = () => {
+  if(!confirm("Sign out? Documents already on this device stay here, but they will stop syncing until you sign in again.")) return;
+  clearSession(); updateAcct();
+};
+async function doLogin(){
+  const em = $("#lgEmail").value.trim(), pw = $("#lgPass").value, err = $("#lgErr"), btn = $("#loginBtn");
+  err.textContent = "";
+  if(!em || !pw){ err.textContent = "Please enter your email and password."; return; }
+  btn.disabled = true;
+  try{
+    const r = await fetch(`${CLOUD.url}/auth/v1/token?grant_type=password`, {
+      method: "POST", headers: {apikey: CLOUD.key, "Content-Type": "application/json"}, body: JSON.stringify({email: em, password: pw})
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error_description || j.msg || j.message || "Sign-in failed.");
+    setSession(j);
+    try{ localStorage.removeItem(SKIP); }catch(e){}
+    $("#lgPass").value = "";
+    renderDash(); show("dash"); updateAcct(); sync();
+  }catch(e){
+    err.textContent = e instanceof TypeError ? "No internet connection." : e.message;
+  }finally{ btn.disabled = false; }
+}
+$("#loginBtn").onclick = doLogin;
+$("#lgPass").addEventListener("keydown", e => { if(e.key === "Enter") doLogin(); });
+window.addEventListener("online", () => scheduleSync());
+document.addEventListener("visibilitychange", () => { if(!document.hidden) scheduleSync(); });
+setInterval(() => { if(!document.hidden) sync(); }, 60000);
+
+if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+
+/* ================= start ================= */
+renderDash(); updateAcct();
+if(loggedIn()){ show("dash"); setStatus("syncing"); sync(); }
+else if(lsGet(SKIP, 0)) show("dash");
+else show("login");
+</script>
+</body>
+</html>
